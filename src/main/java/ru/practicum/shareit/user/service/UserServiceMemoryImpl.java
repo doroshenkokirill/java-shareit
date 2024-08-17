@@ -23,9 +23,9 @@ public class UserServiceMemoryImpl implements UserService {
     @Override
     public UserDto add(UserDto userDto) {
         validateUserDtoEmail(userDto);
-        User user =  UserMapper.toUser(userDto);
+        User user = UserMapper.toUser(userDto);
         user.setId(id++);
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
         return UserMapper.toUserDto(user);
     }
 
@@ -50,7 +50,7 @@ public class UserServiceMemoryImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-         return users.values().stream().map(UserMapper::toUserDto).toList();
+        return users.values().stream().map(UserMapper::toUserDto).toList();
     }
 
     @Override

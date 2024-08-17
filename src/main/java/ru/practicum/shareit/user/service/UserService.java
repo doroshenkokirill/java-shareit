@@ -17,5 +17,5 @@ public interface UserService {
 
     void validateById(int id);
 
-    void validateUserDtoEmail (UserDto userDto);
+    void validateUserDtoEmail(UserDto userDto);
 }
