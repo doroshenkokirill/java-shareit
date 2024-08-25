@@ -17,8 +17,8 @@ import java.util.List;
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
-    private final ItemService itemService;
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final ItemService itemService;
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable int itemId, @RequestHeader(USER_ID_HEADER) int userId) {

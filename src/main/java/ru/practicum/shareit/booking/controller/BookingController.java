@@ -17,8 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
 public class BookingController {
-    private final BookingService bookingService;
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final BookingService bookingService;
 
     @GetMapping("/{bookingId}")
     public BookingDto get(@PathVariable int bookingId, @RequestHeader(USER_ID_HEADER) int userId) {

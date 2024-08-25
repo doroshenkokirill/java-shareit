@@ -14,20 +14,30 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     // Для бронирований по идентификатору бронирующего
     List<Booking> findByBookerId(int bookerId);
+
     List<Booking> findByBookerIdAndStartBeforeAndEndAfterOrderByStart(int bookerId, LocalDateTime start, LocalDateTime end);
+
     List<Booking> findByBookerIdAndEndBeforeOrderByStart(int bookerId, LocalDateTime now);
+
     List<Booking> findByBookerIdAndStartAfterOrderByStart(int bookerId, LocalDateTime now);
+
     List<Booking> findByBookerIdAndStatus(int bookerId, BookingStatus status);
 
     // Для предыдущего и следующего бронирования
     Optional<Booking> findFirstByItemIdAndStartAfterAndStatusNotOrderByStart(int itemId, LocalDateTime now, BookingStatus status);
+
     Optional<Booking> findFirstByBookerIdAndEndBeforeAndStatusNot(int bookerId, LocalDateTime now, BookingStatus status);
+
     Optional<Booking> findFirstByItemIdAndStartBeforeAndStatusNotOrderByStartDesc(int itemId, LocalDateTime now, BookingStatus status);
 
     // Для бронирований по идентификатору владельца вещи
     List<Booking> findByItemOwnerIdOrderByStartDesc(int ownerId);
+
     List<Booking> findByItemOwnerIdAndStartAfterOrderByStartDesc(int ownerId, LocalDateTime now);
+
     List<Booking> findByItemOwnerIdAndEndBeforeOrderByStartDesc(int ownerId, LocalDateTime now);
+
     List<Booking> findByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(int item_owner_id, LocalDateTime start, LocalDateTime end);
+
     List<Booking> findByItemOwnerIdAndStatusOrderByStartDesc(int ownerId, BookingStatus status);
 }
