@@ -14,12 +14,9 @@ public interface ItemService {
 
     List<ItemDto> getAll(int owner);
 
-
     List<ItemDto> search(String text);
 
     ItemDto getById(int id, int userId);
-
-    void validateById(int id);
 
     CommentDtoExp addComment(int itemId, int userId, Comment comment);
 }

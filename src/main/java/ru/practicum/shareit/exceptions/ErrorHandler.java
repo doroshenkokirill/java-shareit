@@ -20,7 +20,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse illegalArgumentHandle(final MethodArgumentNotValidException  e) {
+    public ExceptionResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         log.error("error 400: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
         return new ExceptionResponse("Неверный запрос", e.getMessage());
     }
@@ -34,9 +34,9 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ExceptionResponse notFoundHandle(final WrongOwnerException e) {
+    public ExceptionResponse handleWrongOwnerException(final WrongOwnerException e) {
         log.error("error 403: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
-        return new ExceptionResponse("Объект не найден", e.getMessage());
+        return new ExceptionResponse("Недостаточно прав", e.getMessage());
     }
 
     @ExceptionHandler
@@ -48,7 +48,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse exceptionHandle(final BookingException e) {
+    public ExceptionResponse handleBookingException(final BookingException e) {
         log.error("error 400: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
         return new ExceptionResponse("Ошибка при бронировании", e.getMessage());
     }
