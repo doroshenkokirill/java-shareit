@@ -45,4 +45,11 @@ public class ErrorHandler {
         log.error("error 500: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
         return new ExceptionResponse("Ошибка сервера", e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse exceptionHandle(final BookingException e) {
+        log.error("error 400: {}: {}.", e.getClass().getSimpleName(), e.getMessage());
+        return new ExceptionResponse("Ошибка при бронировании", e.getMessage());
+    }
 }
