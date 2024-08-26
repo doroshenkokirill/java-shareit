@@ -26,7 +26,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     // Для бронирований по идентификатору владельца вещи
     List<Booking> findAllByItemOwnerIdOrderByStartDesc(int ownerId);
 
-    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(int item_owner_id, LocalDateTime start, LocalDateTime end);
+    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(int itemOwnerId, LocalDateTime start, LocalDateTime end);
 
     List<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(int ownerId, LocalDateTime now);
 
