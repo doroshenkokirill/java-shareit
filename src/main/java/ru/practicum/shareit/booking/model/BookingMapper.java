@@ -18,7 +18,8 @@ public class BookingMapper {
                 .status(booking.getStatus())
                 .build();
     }
-    public static Booking toBookingFromBookingRequest(BookingDtoRequest bookingDtoRequest,Item item, User booker, BookingStatus status) {
+
+    public static Booking toBookingFromBookingRequest(BookingDtoRequest bookingDtoRequest, Item item, User booker, BookingStatus status) {
         return Booking.builder()
                 .id(bookingDtoRequest.getItemId())
                 .start(bookingDtoRequest.getStart())
