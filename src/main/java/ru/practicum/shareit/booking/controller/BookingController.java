@@ -17,24 +17,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
 public class BookingController {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final BookingService bookingService;
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{bookingId}")
-    public BookingDto get(@PathVariable int bookingId, @RequestHeader(USER_ID_HEADER) int userId) {
+    public BookingDto get(@PathVariable int bookingId,
+                          @RequestHeader(USER_ID_HEADER) int userId) {
         return bookingService.get(bookingId, userId);
     }
 
     @GetMapping
     public List<BookingDto> getAll(@RequestHeader(USER_ID_HEADER) int userId,
-                                   @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
-        return bookingService.getAll(userId, state);
+                                   @RequestParam(name = "state", defaultValue = "ALL") BookingState bookingState) {
+        return bookingService.getAll(userId, bookingState);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader(USER_ID_HEADER) int userId,
-                                          @RequestParam(name = "state", defaultValue = "ALL") BookingState state) {
-        return bookingService.getAllByOwner(userId, state);
+                                          @RequestParam(name = "state", defaultValue = "ALL") BookingState bookingState) {
+        return bookingService.getAllByOwner(userId, bookingState);
     }
 
     @PostMapping
@@ -44,9 +45,9 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto approve(@PathVariable int bookingId,
-                              @RequestParam boolean approved,
-                              @RequestHeader(USER_ID_HEADER) int userId) {
+    public BookingDto approve(@RequestHeader(USER_ID_HEADER) int userId,
+                              @PathVariable int bookingId,
+                              @RequestParam boolean approved) {
         return bookingService.approve(bookingId, approved, userId);
     }
 }

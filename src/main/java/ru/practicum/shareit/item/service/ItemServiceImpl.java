@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -17,15 +18,12 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.model.UserMapper;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.model.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,27 +37,33 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto add(ItemDto itemDto, int ownerId) {
         userService.validateById(ownerId);
+        User owner = UserMapper.toUser(userService.getById(ownerId));
         Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(UserMapper.toUser(userService.getById(ownerId)));
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        item.setOwner(owner);
+        Item savedItem = itemRepository.save(item);
+        return ItemMapper.toItemDto(savedItem);
     }
+
 
     @Override
     public ItemDto update(int itemId, int ownerId, ItemDto itemDto) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item не найден: " + itemId));
-
         if (item.getOwner().getId() != ownerId) {
             throw new WrongOwnerException("Только владелец может вносить изменения");
         }
-
-        Optional.ofNullable(itemDto.getName()).ifPresent(item::setName);
-        Optional.ofNullable(itemDto.getDescription()).ifPresent(item::setDescription);
-        Optional.ofNullable(itemDto.getAvailable()).ifPresent(item::setAvailable);
-
-        return ItemMapper.toItemDto(itemRepository.save(item));
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
+        }
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
+        }
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
+        }
+        Item updatedItem = itemRepository.save(item);
+        return ItemMapper.toItemDto(updatedItem);
     }
-
 
     @Override
     public List<ItemDto> getAll(int ownerId) {
@@ -75,24 +79,29 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item не найден: " + itemId));
 
-        List<CommentDtoExp> comments = commentRepository.findAllByItemId(itemId).stream()
+        List<CommentDtoExp> comments = commentRepository.findAllByItemId(item.getId())
+                .stream()
                 .map(CommentMapper::toCommentDtoExp)
                 .toList();
 
-        ItemDto itemDto = ItemMapper.toItemDto(item);
+        ItemDto itemDto = ItemMapper.toItemDto(itemRepository.findById(itemId).get());
         itemDto.setComments(comments);
 
         if (item.getOwner().getId() == userId) {
-            bookingRepository.findFirstByItemIdAndStartBeforeAndStatusNotOrderByStartDesc(itemId, LocalDateTime.now(), BookingStatus.REJECTED)
-                    .ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toBookingDto(booking)));
-
-            bookingRepository.findFirstByItemIdAndStartAfterAndStatusNotOrderByStart(itemId, LocalDateTime.now(), BookingStatus.REJECTED)
-                    .ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toBookingDto(booking)));
+            Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusNotOrderByStartDesc(itemId, LocalDateTime.now(), BookingStatus.REJECTED);
+            lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toBookingDto(booking)));
+            Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusNotOrderByStart(itemId, LocalDateTime.now(), BookingStatus.REJECTED);
+            nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toBookingDto(booking)));
         }
-
         return itemDto;
     }
 
+    @Override
+    public void validateById(int id) {
+        if (!itemRepository.existsById(id)) {
+            throw new NotFoundException(String.format("Item c id - %d не найден. Ошибка", id));
+        }
+    }
 
     @Override
     public List<ItemDto> search(String text) {
@@ -112,20 +121,16 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id - %d не найден. Ошибка", userId)));
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Item c id - %d не найден. Ошибка", itemId)));
-
-        boolean hasValidBooking = bookingRepository
-                .findFirstByBookerIdAndEndBeforeAndStatusNot(userId, LocalDateTime.now(), BookingStatus.REJECTED)
-                .isPresent();
-
-        if (!hasValidBooking) {
+        Optional<Booking> bookingOptional = bookingRepository
+                .findFirstByBookerIdAndEndBeforeAndStatusNot(userId, LocalDateTime.now(), BookingStatus.REJECTED);
+        if (bookingOptional.isEmpty()) {
             throw new AddCommentException("Нельзя добавить комментарий");
         }
-
         comment.setCreated(LocalDateTime.now());
         comment.setItem(item);
         comment.setAuthor(author);
 
-        return CommentMapper.toCommentDtoExp(commentRepository.save(comment));
+        Comment savedComment = commentRepository.save(comment);
+        return CommentMapper.toCommentDtoExp(savedComment);
     }
-
 }
