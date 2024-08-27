@@ -78,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
             case PAST -> bookingRepository.findAllByBookerIdAndEndBeforeOrderByStart(userId, currentTime);
             case FUTURE -> bookingRepository.findAllByBookerIdAndStartAfterOrderByStart(userId, currentTime);
             case WAITING -> bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING);
-            case REJECTED -> throw new IllegalArgumentException("State parameter is wrong.");
+            default -> throw new IllegalArgumentException("State parameter is wrong.");
         };
 
         return bookingList.stream()
@@ -97,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
             case PAST -> bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now);
             case FUTURE -> bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now);
             case WAITING -> bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
-            case REJECTED -> throw new IllegalArgumentException("State parameter is wrong.");
+            default -> throw new IllegalArgumentException("State parameter is wrong.");
         };
 
         return bookingList.stream()
