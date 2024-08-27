@@ -12,7 +12,6 @@ import java.util.Optional;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
-    // Для бронирований по идентификатору бронирующего
     List<Booking> findAllByBookerId(int bookerId);
 
     List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStart(int bookerId, LocalDateTime cur, LocalDateTime now);
@@ -23,7 +22,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     List<Booking> findAllByBookerIdAndStatus(int bookerId, BookingStatus status);
 
-    // Для бронирований по идентификатору владельца вещи
     List<Booking> findAllByItemOwnerIdOrderByStartDesc(int ownerId);
 
     List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(int itemOwnerId, LocalDateTime start, LocalDateTime end);
@@ -34,7 +32,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     List<Booking> findAllByItemOwnerIdAndStatusOrderByStartDesc(int ownerId, BookingStatus status);
 
-    // Для предыдущего и следующего бронирования
     Optional<Booking> findFirstByBookerIdAndEndBeforeAndStatusNot(int bookerId, LocalDateTime now, BookingStatus status);
 
     Optional<Booking> findFirstByItemIdAndStartBeforeAndStatusNotOrderByStartDesc(int itemId, LocalDateTime now, BookingStatus status);
