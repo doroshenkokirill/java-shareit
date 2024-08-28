@@ -5,6 +5,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.comment.dto.CommentDtoExp;
+import ru.practicum.shareit.request.model.ItemRequest;
+
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
@@ -20,5 +25,8 @@ public class ItemDto {
     private String description;
     @NotNull
     private Boolean available;
-    private int request;
+    private ItemRequest request;
+    private List<CommentDtoExp> comments;
+    private BookingDto lastBooking;
+    private BookingDto nextBooking;
 }

@@ -1,8 +1,10 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comment.dto.CommentDtoExp;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -19,8 +21,8 @@ public class ItemController {
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(@PathVariable int itemId) {
-        return itemService.getById(itemId);
+    public ItemDto getById(@PathVariable int itemId, @RequestHeader(USER_ID_HEADER) int userId) {
+        return itemService.getById(itemId, userId);
     }
 
     @GetMapping
@@ -43,5 +45,12 @@ public class ItemController {
     public ItemDto update(@RequestBody ItemDto itemDto, @PathVariable int itemId,
                           @RequestHeader(USER_ID_HEADER) int owner) {
         return itemService.update(itemId, owner, itemDto);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoExp addComment(@PathVariable int itemId,
+                                    @RequestHeader(USER_ID_HEADER) int userId,
+                                    @Valid @RequestBody Comment comment) {
+        return itemService.addComment(itemId, userId, comment);
     }
 }
