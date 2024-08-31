@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exceptions.AddCommentException;
 import ru.practicum.shareit.exceptions.BookingException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
@@ -42,44 +44,12 @@ class BookingServiceImplTest {
     @InjectMocks
     private BookingServiceImpl bookingService;
 
-    private final User owner = User.builder()
-            .id(2)
-            .email("user@test.ru")
-            .name("user")
-            .build();
-    private final Item item = Item.builder()
-            .id(1)
-            .name("Item name")
-            .description("Item description")
-            .available(true)
-            .owner(owner)
-            .build();
-    private final User booker = User.builder()
-            .id(1)
-            .email("booker@test.ru")
-            .name("Booker name")
-            .build();
-    private final Booking booking = Booking.builder()
-            .id(1)
-            .booker(booker)
-            .item(item)
-            .start(LocalDateTime.parse("2020-01-01T00:00:00"))
-            .end(LocalDateTime.parse("2020-01-01T01:00:00"))
-            .status(BookingStatus.WAITING)
-            .build();
-    ;
-    private final BookingDto bookingDto = BookingDto.builder()
-            .id(1)
-            .start(LocalDateTime.parse("2020-01-01T00:00:00"))
-            .end(LocalDateTime.parse("2020-01-01T01:00:00"))
-            .status(BookingStatus.WAITING)
-            .build();
-    ;
-    private final BookingDtoRequest bookingDtoRequest = BookingDtoRequest.builder()
-            .itemId(1)
-            .start(LocalDateTime.parse("2020-01-01T00:00:00"))
-            .end(LocalDateTime.parse("2020-01-01T01:00:00"))
-            .build();
+    private User owner;
+    private Item item;
+    private User booker;
+    private Booking booking;
+    private BookingDto bookingDto;
+    private BookingDtoRequest bookingDtoRequest;
 
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -106,11 +76,26 @@ class BookingServiceImplTest {
 
     @Test
     void approve() {
-    }
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
 
+        BookingDto bookingDto = bookingService.approve(1, true, owner.getId());
+
+        assertEquals(BookingStatus.APPROVED, bookingDto.getStatus());
+        assertAll(
+                () -> assertNotNull(bookingDto),
+                () -> assertEquals(booking.getId(), bookingDto.getId()),
+                () -> assertEquals(BookingStatus.APPROVED, bookingDto.getStatus())
+        );
+    }
 
     @Test
     void get() {
+        when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
+        BookingDto bookingDto = bookingService.get(1, booker.getId());
+        assertAll(
+                () -> assertNotNull(bookingDto),
+                () -> assertEquals(booking.getId(), bookingDto.getId())
+        );
     }
 
     @Test
@@ -134,6 +119,46 @@ class BookingServiceImplTest {
                 () -> assertNotNull(bookingDtoList),
                 () -> assertEquals(booking.getId(), bookingDtoList.getFirst().getId())
         );
+    }
+
+    @BeforeEach
+    void setUp() {
+        owner = User.builder()
+                .id(1)
+                .email("user@test.ru")
+                .name("user")
+                .build();
+        item = Item.builder()
+                .id(1)
+                .name("Item name")
+                .description("Item description")
+                .available(true)
+                .owner(owner)
+                .build();
+        booker = User.builder()
+                .id(2)
+                .email("booker@test.ru")
+                .name("Booker name")
+                .build();
+        booking = Booking.builder()
+                .id(1)
+                .booker(booker)
+                .item(item)
+                .start(LocalDateTime.parse("2020-01-01T00:00:00"))
+                .end(LocalDateTime.parse("2020-01-01T01:00:00"))
+                .status(BookingStatus.WAITING)
+                .build();
+        bookingDto = BookingDto.builder()
+                .id(1)
+                .start(LocalDateTime.parse("2020-01-01T00:00:00"))
+                .end(LocalDateTime.parse("2020-01-01T01:00:00"))
+                .status(BookingStatus.WAITING)
+                .build();
+        bookingDtoRequest = BookingDtoRequest.builder()
+                .itemId(1)
+                .start(LocalDateTime.parse("2020-01-01T00:00:00"))
+                .end(LocalDateTime.parse("2020-01-01T01:00:00"))
+                .build();
     }
 }
 
