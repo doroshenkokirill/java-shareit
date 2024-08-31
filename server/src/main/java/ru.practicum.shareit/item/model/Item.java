@@ -23,11 +23,8 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotEmpty
     private String name;
-    @NotEmpty
     private String description;
-    @NotNull
     private Boolean available;
     @ManyToOne
     private User owner;

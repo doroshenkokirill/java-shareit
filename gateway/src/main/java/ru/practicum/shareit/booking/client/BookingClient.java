@@ -28,7 +28,7 @@ public class BookingClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> get(int bookingId, int userId) {
+    public ResponseEntity<Object> get(long bookingId, long userId) {
         return get("/" + bookingId, userId);
     }
 
@@ -36,11 +36,11 @@ public class BookingClient extends BaseClient {
         return get("?state={state}", userId, Map.of("state", state.name()));
     }
 
-    public ResponseEntity<Object> getAllByOwner(int userId, BookingState state) {
+    public ResponseEntity<Object> getAllByOwner(long userId, BookingState state) {
         return get("/owner?state=" + state.name(), userId);
     }
 
-    public ResponseEntity<Object> create(BookingDtoRequest requestDto, int userId) {
+    public ResponseEntity<Object> create(BookingDtoRequest requestDto, long userId) {
         return post("", userId, requestDto);
     }
 

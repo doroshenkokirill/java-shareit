@@ -6,6 +6,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.comment.dto.CommentDtoExp;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
@@ -116,7 +117,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDtoExp addComment(int itemId, int userId, Comment comment) {
+    public CommentDtoExp addComment(int itemId, int userId, CommentDto comment) {
         User author = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id - %d не найден. Ошибка", userId)));
         Item item = itemRepository.findById(itemId)
@@ -130,7 +131,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setItem(item);
         comment.setAuthor(author);
 
-        Comment savedComment = commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(CommentMapper.toComment(comment));
         return CommentMapper.toCommentDtoExp(savedComment);
     }
 }

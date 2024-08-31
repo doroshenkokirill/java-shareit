@@ -47,7 +47,7 @@ public class ItemClient extends BaseClient {
         return patch("/" + itemId, ownerId, itemDto);
     }
 
-    public ResponseEntity<Object> addComment(int itemId, int userId, CommentDto commentDto) {
-        return post("/" + itemId + "/comment", userId, commentDto);
+    public ResponseEntity<Object> addComment(long itemId, long userId, CommentDto comment) {
+        return post("/" + itemId + "/comment", userId, comment);
     }
 }

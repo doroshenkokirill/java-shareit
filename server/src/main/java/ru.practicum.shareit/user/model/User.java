@@ -18,9 +18,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @NotEmpty
     private String name;
-    @Email
-    @NotEmpty
     private String email;
 }

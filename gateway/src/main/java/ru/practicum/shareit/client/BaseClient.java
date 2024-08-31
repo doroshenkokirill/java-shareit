@@ -1,22 +1,32 @@
 package ru.practicum.shareit.client;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 public class BaseClient {
     protected final RestTemplate rest;
 
     public BaseClient(RestTemplate rest) {
         this.rest = rest;
+    }
+
+    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
+        if (response.getStatusCode().is2xxSuccessful()) {
+            return response;
+        }
+
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
+
+        if (response.hasBody()) {
+            return responseBuilder.body(response.getBody());
+        }
+
+        return responseBuilder.build();
     }
 
     protected ResponseEntity<Object> get(String path) {
@@ -103,19 +113,5 @@ public class BaseClient {
             headers.set("X-Sharer-User-Id", String.valueOf(userId));
         }
         return headers;
-    }
-
-    private static ResponseEntity<Object> prepareGatewayResponse(ResponseEntity<Object> response) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response;
-        }
-
-        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.status(response.getStatusCode());
-
-        if (response.hasBody()) {
-            return responseBuilder.body(response.getBody());
-        }
-
-        return responseBuilder.build();
     }
 }
