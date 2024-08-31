@@ -18,6 +18,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.model.UserMapper;
@@ -32,6 +34,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
@@ -41,8 +44,11 @@ public class ItemServiceImpl implements ItemService {
         User owner = UserMapper.toUser(userService.getById(ownerId));
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
-        Item savedItem = itemRepository.save(item);
-        return ItemMapper.toItemDto(savedItem);
+        Integer requestId = itemDto.getRequestId();
+        ItemRequest itemRequest = itemRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException(String.format("ItemRequestId не найден" + requestId)));
+        item.setRequest(itemRequest);
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
 
@@ -122,9 +128,13 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id - %d не найден. Ошибка", userId)));
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Item c id - %d не найден. Ошибка", itemId)));
-        Optional<Booking> bookingOptional = bookingRepository
-                .findFirstByBookerIdAndEndBeforeAndStatusNot(userId, LocalDateTime.now(), BookingStatus.REJECTED);
-        if (bookingOptional.isEmpty()) {
+        List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemId(userId, itemId);
+
+        boolean isAbleToAddComment = bookings.stream()
+                .anyMatch(booking -> booking.getEnd().isBefore(LocalDateTime.now())
+                        && booking.getStatus().equals(BookingStatus.APPROVED));
+
+        if (!isAbleToAddComment) {
             throw new AddCommentException("Нельзя добавить комментарий");
         }
         comment.setCreated(LocalDateTime.now());

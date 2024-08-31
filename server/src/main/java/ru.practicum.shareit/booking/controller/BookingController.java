@@ -39,7 +39,7 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto create(@RequestBody @Valid BookingDtoRequest bookingDtoRequest,
+    public BookingDto create(@RequestBody BookingDtoRequest bookingDtoRequest,
                              @RequestHeader(USER_ID_HEADER) int bookerId) {
         return bookingService.create(bookingDtoRequest, bookerId);
     }

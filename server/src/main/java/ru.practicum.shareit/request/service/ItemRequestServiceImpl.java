@@ -43,7 +43,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         validateUser(userId);
         List<ItemRequest> list = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId);
         return getItemDtosToRequestList(list);
-
     }
 
     @Override
@@ -72,14 +71,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     private List<ItemRequestDto> getItemDtosToRequestList(List<ItemRequest> requests) {
         return requests.stream()
-                .map(request -> {
-                    ItemRequestDto requestDto = ItemRequestMapper.toItemRequestDto(request);
+                .map(ItemRequestMapper::toItemRequestDto)
+                .peek(requestDto -> {
                     List<ItemDto> itemDtoList = itemRepository.findByRequestId(requestDto.getId())
                             .stream()
                             .map(ItemMapper::toItemDto)
                             .toList();
+
                     requestDto.setItems(itemDtoList);
-                    return requestDto;
                 })
                 .toList();
     }
