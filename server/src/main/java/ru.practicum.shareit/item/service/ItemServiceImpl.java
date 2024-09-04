@@ -45,9 +45,11 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(owner);
         Integer requestId = itemDto.getRequestId();
-        ItemRequest itemRequest = itemRequestRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException(String.format("ItemRequestId не найден" + requestId)));
-        item.setRequest(itemRequest);
+        if (requestId != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(requestId)
+                    .orElseThrow(() -> new NotFoundException(String.format("ItemRequestId не найден" + requestId)));
+            item.setRequest(itemRequest);
+        }
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -129,19 +131,13 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(String.format("Item c id - %d не найден. Ошибка", itemId)));
         List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemId(userId, itemId);
-
-        boolean isAbleToAddComment = bookings.stream()
-                .anyMatch(booking -> booking.getEnd().isBefore(LocalDateTime.now())
-                        && booking.getStatus().equals(BookingStatus.APPROVED));
-
-        if (!isAbleToAddComment) {
-            throw new AddCommentException("Нельзя добавить комментарий");
-        }
+        boolean isApproved = bookings.stream().allMatch(booking -> booking.getStatus().equals(BookingStatus.APPROVED) ||
+                booking.getEnd().isBefore(LocalDateTime.now()));
+        if (!isApproved) throw new AddCommentException("Нельзя добавить комментарий");
         comment.setCreated(LocalDateTime.now());
         comment.setItem(item);
         comment.setAuthor(author);
-
-        Comment savedComment = commentRepository.save(CommentMapper.toComment(comment));
-        return CommentMapper.toCommentDtoExp(savedComment);
+        Comment commentToSave = commentRepository.save(CommentMapper.toComment(comment));
+        return CommentMapper.toCommentDtoExp(commentToSave);
     }
 }

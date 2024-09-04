@@ -26,7 +26,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getAll(int userId) {
         validateUser(userId);
-        List<ItemRequest> list = itemRequestRepository.findByRequestorIdNotOrderByCreatedDesc(userId);
+        List<ItemRequest> list = itemRequestRepository.findByRequestorIdOrderByCreatedDesc(userId);
         return getItemDtosToRequestList(list);
     }
 
@@ -73,14 +73,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return requests.stream()
                 .map(ItemRequestMapper::toItemRequestDto)
                 .peek(requestDto -> {
-                    List<ItemDto> itemDtoList = itemRepository.findByRequestId(requestDto.getId())
+                    System.out.println("Request ID: " + requestDto.getId());
+                    List<ItemDto> itemDtoList = itemRepository.findItemsByRequestId(requestDto.getId())
                             .stream()
                             .map(ItemMapper::toItemDto)
                             .toList();
-
+                    System.out.println("Items found for Request ID " + requestDto.getId() + ": " + itemDtoList.size());
                     requestDto.setItems(itemDtoList);
                 })
                 .toList();
     }
-
 }

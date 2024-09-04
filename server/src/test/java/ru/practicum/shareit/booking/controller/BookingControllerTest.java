@@ -77,7 +77,7 @@ class BookingControllerTest {
                 .thenReturn(bookings);
 
         mockMvc.perform(get("/bookings")
-                .header("X-Sharer-User-Id", userId)
+                        .header("X-Sharer-User-Id", userId)
                         .param("state", state.name())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
