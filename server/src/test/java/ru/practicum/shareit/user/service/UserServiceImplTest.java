@@ -102,7 +102,7 @@ public class UserServiceImplTest {
         List<UserDto> userDtoList = userService.getAll();
 
         assertEquals(1, userDtoList.size());
-        assertThat(userDtoList.get(0).getName()).isEqualTo(user.getName());
-        assertThat(userDtoList.get(0).getEmail()).isEqualTo(user.getEmail());
+        assertThat(userDtoList.getFirst().getName()).isEqualTo(user.getName());
+        assertThat(userDtoList.getFirst().getEmail()).isEqualTo(user.getEmail());
     }
 }
