@@ -1,10 +1,13 @@
 package ru.practicum.shareit.item.service;
 
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -23,7 +26,9 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional
 class ItemServiceImplTest {
     @Autowired
@@ -48,6 +53,7 @@ class ItemServiceImplTest {
     void setUp() {
         user = User.builder().id(1).name("User Name").email("123@test.ru").build();
         item = Item.builder().id(1).name("Item Name").description("Item Description").available(true).owner(user).build();
+        user = userRepository.save(user);
         userRepository.save(user);
         itemRepository.save(item);
     }
@@ -69,11 +75,12 @@ class ItemServiceImplTest {
     void getAll() {
         List<ItemDto> itemDtoList = itemService.getAll(user.getId());
 
-        assertEquals(itemDtoList.getFirst().getName(),item.getName());
+        assertEquals(itemDtoList.getFirst().getName(), item.getName());
     }
 
     @Test
     void getById() {
+        userRepository.save(user);
         ItemDto itemDto = itemService.getById(item.getId(), user.getId());
 
         assertThat(itemDto).isNotNull();
@@ -84,11 +91,14 @@ class ItemServiceImplTest {
     @Test
     void search() {
         List<ItemDto> itemDtoList = itemService.search("item");
-        assertEquals(itemDtoList.size(),1);
+
+        assertEquals(itemDtoList.size(), 1);
     }
 
     @Test
     void addComment() {
+        userRepository.save(user);
+        itemRepository.save(item);
         Booking booking = Booking.builder().id(1).item(item).booker(user)
                 .start(LocalDateTime.parse("2020-01-01T00:00:00"))
                 .end(LocalDateTime.parse("2020-01-01T01:00:00"))
@@ -99,7 +109,7 @@ class ItemServiceImplTest {
         CommentDto commentDto = CommentDto.builder().text("Comment Dto Text").build();
         CommentDtoExp commentDtoExp = itemService.addComment(item.getId(), user.getId(), commentDto);
 
-        assertEquals(commentDtoExp.getText(),commentDto.getText());
+        assertEquals(commentDtoExp.getText(), commentDto.getText());
 
         Comment comment1 = commentRepository.findById(commentDtoExp.getId()).orElseThrow();
         assertEquals(comment1.getText(), commentDto.getText());
