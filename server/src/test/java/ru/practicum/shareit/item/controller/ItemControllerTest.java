@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -28,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @WebMvcTest(ItemController.class)
 class ItemControllerTest {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -37,7 +37,6 @@ class ItemControllerTest {
     private ItemDto itemDto;
     private CommentDto commentDto;
     private CommentDtoExp commentDtoExp;
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @BeforeEach
     void setUp() {

@@ -23,7 +23,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @WebMvcTest(BookingController.class)
 class BookingControllerTest {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
+    private final DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @MockBean
     private BookingService bookingService;
     @Autowired
@@ -39,13 +42,9 @@ class BookingControllerTest {
     private MockMvc mockMvc;
     private BookingDtoRequest bookingDtoRequest;
     private BookingDto bookingDtoResponse;
-
     private User booker;
     private User owner;
     private Item item;
-    private final DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
-
 
     @Test
     void getTest() throws Exception {

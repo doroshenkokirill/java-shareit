@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplTest {
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @Mock
     private BookingRepository bookingRepository;
     @Mock
@@ -41,15 +42,12 @@ class BookingServiceImplTest {
     private UserRepository userRepository;
     @InjectMocks
     private BookingServiceImpl bookingService;
-
     private User owner;
     private Item item;
     private User booker;
     private Booking booking;
     private BookingDto bookingDto;
     private BookingDtoRequest bookingDtoRequest;
-
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @Test
     void create() {

@@ -19,11 +19,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ItemRequestController.class)
 public class ItemRequestControllerTest {
+    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -31,7 +33,6 @@ public class ItemRequestControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private ItemRequestDto itemRequestDto;
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @BeforeEach
     void setUp() {

@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class CommentDtoTest {
     private final JacksonTester<CommentDto> json;
+
     @Test
     void test() throws Exception {
         CommentDto commentDto = CommentDto.builder()

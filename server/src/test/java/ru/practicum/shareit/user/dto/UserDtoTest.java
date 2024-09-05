@@ -8,6 +8,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 @JsonTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserDtoTest {
