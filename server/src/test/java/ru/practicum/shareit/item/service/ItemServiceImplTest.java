@@ -95,8 +95,6 @@ class ItemServiceImplTest {
 
     @Test
     void addComment() {
-        userRepository.save(user);
-        itemRepository.save(item);
         Booking booking = Booking.builder().id(1).item(item).booker(user)
                 .start(LocalDateTime.parse("2020-01-01T00:00:00"))
                 .end(LocalDateTime.parse("2020-01-01T01:00:00"))
