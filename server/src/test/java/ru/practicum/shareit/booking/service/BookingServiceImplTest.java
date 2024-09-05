@@ -89,7 +89,9 @@ class BookingServiceImplTest {
     @Test
     void get() {
         when(bookingRepository.findById(anyInt())).thenReturn(Optional.of(booking));
+
         BookingDto bookingDto = bookingService.get(1, booker.getId());
+
         assertAll(
                 () -> assertNotNull(bookingDto),
                 () -> assertEquals(booking.getId(), bookingDto.getId())
@@ -99,7 +101,9 @@ class BookingServiceImplTest {
     @Test
     void getAll() {
         when(bookingRepository.findAllByBookerId(anyInt())).thenReturn(List.of(booking));
+
         List<BookingDto> bookingDtoList = bookingService.getAll(booker.getId(), BookingState.ALL);
+
         assertAll(
                 () -> assertNotNull(bookingDtoList),
                 () -> assertEquals(1, bookingDtoList.size())
