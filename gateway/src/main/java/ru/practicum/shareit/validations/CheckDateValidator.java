@@ -2,17 +2,17 @@ package ru.practicum.shareit.validations;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 
 import java.time.LocalDateTime;
 
-public class CheckDateValidator implements ConstraintValidator<StartBeforeEndDateValid, BookingDto> {
+public class CheckDateValidator implements ConstraintValidator<StartBeforeEndDateValid, BookingDtoRequest> {
     @Override
     public void initialize(StartBeforeEndDateValid constraintAnnotation) {
     }
 
     @Override
-    public boolean isValid(BookingDto bookingDto, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(BookingDtoRequest bookingDto, ConstraintValidatorContext constraintValidatorContext) {
         LocalDateTime start = bookingDto.getStart();
         LocalDateTime end = bookingDto.getEnd();
         if (start == null || end == null) {

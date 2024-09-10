@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 
 import java.util.List;
 
@@ -22,6 +22,6 @@ public class ItemDto {
     private Boolean available;
     private Integer requestId;
     private List<CommentDtoExp> comments;
-    private BookingDto lastBooking;
-    private BookingDto nextBooking;
+    private BookingDtoRequest lastBooking;
+    private BookingDtoRequest nextBooking;
 }
