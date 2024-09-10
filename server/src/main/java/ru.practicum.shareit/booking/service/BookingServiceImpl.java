@@ -1,17 +1,18 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.*;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.exceptions.BookingException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
@@ -74,9 +75,11 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookingList = switch (bookingState) {
             case BookingState.ALL -> bookingRepository.findAllByBookerId(userId);
-            case BookingState.CURRENT -> bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStart(userId, currentTime, currentTime);
+            case BookingState.CURRENT ->
+                    bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStart(userId, currentTime, currentTime);
             case BookingState.PAST -> bookingRepository.findAllByBookerIdAndEndBeforeOrderByStart(userId, currentTime);
-            case BookingState.FUTURE -> bookingRepository.findAllByBookerIdAndStartAfterOrderByStart(userId, currentTime);
+            case BookingState.FUTURE ->
+                    bookingRepository.findAllByBookerIdAndStartAfterOrderByStart(userId, currentTime);
             case BookingState.WAITING -> bookingRepository.findAllByBookerIdAndStatus(userId, BookingStatus.WAITING);
             default -> throw new IllegalArgumentException("State parameter is wrong.");
         };
@@ -93,10 +96,13 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookingList = switch (bookingState) {
             case BookingState.ALL -> bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
-            case BookingState.CURRENT -> bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+            case BookingState.CURRENT ->
+                    bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
             case BookingState.PAST -> bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now);
-            case BookingState.FUTURE -> bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now);
-            case BookingState.WAITING -> bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
+            case BookingState.FUTURE ->
+                    bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now);
+            case BookingState.WAITING ->
+                    bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, BookingStatus.WAITING);
             default -> throw new IllegalArgumentException("State parameter is wrong.");
         };
 

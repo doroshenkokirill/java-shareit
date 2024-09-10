@@ -24,7 +24,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ItemRequestDto getByUserIdAndReqId(@RequestHeader(USER_ID_HEADER) int userId,
-                                  @PathVariable int requestId) {
+                                              @PathVariable int requestId) {
         return requestService.getByUserIdAndReqId(userId, requestId);
     }
 
