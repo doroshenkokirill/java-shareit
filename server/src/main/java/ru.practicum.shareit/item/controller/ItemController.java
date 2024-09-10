@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -17,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@PathVariable int itemId, @RequestHeader(USER_ID_HEADER) int userId) {

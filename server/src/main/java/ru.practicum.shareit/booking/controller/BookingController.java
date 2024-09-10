@@ -9,6 +9,8 @@ import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
+
 /**
  * TODO Sprint add-bookings.
  */
@@ -17,7 +19,6 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
     private final BookingService bookingService;
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @GetMapping("/{bookingId}")
     public BookingDto get(@PathVariable int bookingId,

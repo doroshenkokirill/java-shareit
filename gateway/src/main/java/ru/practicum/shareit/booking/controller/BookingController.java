@@ -8,11 +8,12 @@ import ru.practicum.shareit.booking.client.BookingClient;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.dto.BookingState;
 
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
 public class BookingController {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final BookingClient bookingClient;
 
     @GetMapping("/{bookingId}")

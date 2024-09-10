@@ -28,11 +28,11 @@ import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
 
 @AutoConfigureMockMvc
 @WebMvcTest(BookingController.class)
 class BookingControllerTest {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     @MockBean
     private BookingService bookingService;

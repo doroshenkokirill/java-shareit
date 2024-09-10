@@ -8,11 +8,12 @@ import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/items")
 public class ItemController {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final ItemClient itemClient;
 
     @GetMapping("/{itemId}")

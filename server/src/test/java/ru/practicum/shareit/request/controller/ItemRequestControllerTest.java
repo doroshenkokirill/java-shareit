@@ -21,11 +21,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(ItemRequestController.class)
 public class ItemRequestControllerTest {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     @Autowired
     private MockMvc mockMvc;
     @MockBean

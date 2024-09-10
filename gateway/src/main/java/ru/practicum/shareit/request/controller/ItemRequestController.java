@@ -7,11 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.client.ItemRequestClient;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
+import static ru.practicum.shareit.Constants.USER_ID_HEADER;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
-    private static final String USER_ID_HEADER = "X-Sharer-User-Id";
     private final ItemRequestClient itemRequestClient;
 
     @GetMapping("/all")
