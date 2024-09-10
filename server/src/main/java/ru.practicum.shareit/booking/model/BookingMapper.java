@@ -1,14 +1,14 @@
 package ru.practicum.shareit.booking.model;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-@Component
+@UtilityClass
 public class BookingMapper {
-    public static BookingDto toBookingDto(Booking booking) {
+    public BookingDto toBookingDto(Booking booking) {
         return BookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -19,7 +19,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static Booking toBookingFromBookingRequest(BookingDtoRequest bookingDtoRequest, Item item, User booker, BookingStatus status) {
+    public Booking toBookingFromBookingRequest(BookingDtoRequest bookingDtoRequest, Item item, User booker, BookingStatus status) {
         return Booking.builder()
                 .id(bookingDtoRequest.getItemId())
                 .start(bookingDtoRequest.getStart())
