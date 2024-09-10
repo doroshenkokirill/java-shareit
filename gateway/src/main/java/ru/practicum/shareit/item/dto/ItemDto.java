@@ -21,7 +21,7 @@ public class ItemDto {
     @NotNull
     private Boolean available;
     private Integer requestId;
-    private List<CommentDtoExp> comments;
+    private List<CommentDto> comments;
     private BookingDtoRequest lastBooking;
     private BookingDtoRequest nextBooking;
 }
