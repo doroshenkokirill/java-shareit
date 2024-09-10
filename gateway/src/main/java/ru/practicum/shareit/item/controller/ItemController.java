@@ -8,6 +8,8 @@ import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+import java.util.Collections;
+
 import static ru.practicum.shareit.Constants.USER_ID_HEADER;
 
 @RestController
@@ -30,6 +32,9 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> search(@RequestHeader(USER_ID_HEADER) int userId,
                                          @RequestParam("text") String text) {
+        if (text.isBlank()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
         return itemClient.search(text, userId);
     }
 
