@@ -3,10 +3,12 @@ package ru.practicum.shareit.item.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.validations.Create;
 
 import java.util.Collections;
 
@@ -54,7 +56,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@PathVariable int itemId,
                                              @RequestHeader(USER_ID_HEADER) int userId,
-                                             @Valid @RequestBody CommentDto comment) {
+                                             @Validated({Create.class}) @RequestBody CommentDto comment) {
         return itemClient.addComment(itemId, userId, comment);
     }
 }
