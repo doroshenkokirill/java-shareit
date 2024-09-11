@@ -12,7 +12,7 @@ import ru.practicum.shareit.validations.Update;
 @Data
 @Builder
 @AllArgsConstructor
-public class ItemResponseDto {
+public class ItemDtoRequest {
     private int id;
     @NotBlank(groups = Create.class)
     @Size(max = 255, groups = Create.class)

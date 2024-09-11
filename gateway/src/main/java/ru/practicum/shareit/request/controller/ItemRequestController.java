@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.client.ItemRequestClient;
@@ -10,7 +11,7 @@ import ru.practicum.shareit.validations.Create;
 
 import static ru.practicum.shareit.Constants.USER_ID_HEADER;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
 public class ItemRequestController {

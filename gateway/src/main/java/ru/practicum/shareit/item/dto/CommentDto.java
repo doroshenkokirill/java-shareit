@@ -5,16 +5,15 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.validations.Create;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class CommentDto {
     @NotBlank(groups = {Create.class})
     @Size(max = 512, groups = {Create.class})
     private String text;
-    private LocalDateTime created;
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemResponseDto;
+import ru.practicum.shareit.item.dto.ItemDtoRequest;
 
 import java.util.Map;
 
@@ -39,11 +39,11 @@ public class ItemClient extends BaseClient {
         return get("/search?text=" + text, userId, Map.of("text", text));
     }
 
-    public ResponseEntity<Object> add(ItemResponseDto itemDto, int ownerId) {
+    public ResponseEntity<Object> add(ItemDtoRequest itemDto, int ownerId) {
         return post("", ownerId, itemDto);
     }
 
-    public ResponseEntity<Object> update(int itemId, int ownerId, ItemResponseDto itemDto) {
+    public ResponseEntity<Object> update(int itemId, int ownerId, ItemDtoRequest itemDto) {
         return patch("/" + itemId, ownerId, itemDto);
     }
 
