@@ -13,9 +13,10 @@ import ru.practicum.shareit.validations.Update;
 public class UserDto {
     private int id;
     @NotBlank(groups = {Create.class})
-    @Size(max = 255, groups = {Create.class})
+    @Size(max = 255, groups = {Create.class, Update.class})
     private String name;
     @Email(groups = {Create.class, Update.class})
+    @Size(max = 255, groups = {Create.class, Update.class})
     @NotEmpty(groups = {Create.class})
     private String email;
 }
