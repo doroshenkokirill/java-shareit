@@ -6,26 +6,22 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingDtoRequest;
-
-import java.util.List;
+import ru.practicum.shareit.validations.Create;
+import ru.practicum.shareit.validations.Update;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class ItemDto {
+public class ItemResponseDto {
     private int id;
-    @NotBlank
-    @Size(max = 255)
+    @NotBlank(groups = Create.class)
+    @Size(max = 255, groups = Create.class)
     private String name;
-    @NotBlank
-    @Size(max = 512)
+    @NotBlank(groups = {Create.class, Update.class})
+    @Size(max = 512,groups = Create.class)
     private String description;
-    @NotNull
+    @NotNull(groups = {Create.class, Update.class})
     private Boolean available;
-    @NotNull
+    @NotNull(groups = {Update.class})
     private Integer requestId;
-    private List<CommentDto> comments;
-    private BookingDtoRequest lastBooking;
-    private BookingDtoRequest nextBooking;
 }

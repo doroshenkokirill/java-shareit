@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.validations.Create;
-import ru.practicum.shareit.validations.Update;
 
 import java.time.LocalDateTime;
 
@@ -14,8 +13,8 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class CommentDto {
-    @NotBlank(groups = {Create.class, Update.class})
-    @Size(max = 512, groups = {Create.class, Update.class})
+    @NotBlank(groups = {Create.class})
+    @Size(max = 512, groups = {Create.class})
     private String text;
     private LocalDateTime created;
 }

@@ -6,7 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.validations.Create;
 import ru.practicum.shareit.validations.Update;
 
@@ -41,13 +41,13 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody @Validated({Create.class}) ItemDto itemDto,
+    public ResponseEntity<Object> add(@RequestBody @Validated({Create.class}) ItemResponseDto itemDto,
                                       @RequestHeader(USER_ID_HEADER) int ownerId) {
         return itemClient.add(itemDto, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> update(@RequestBody @Validated({Update.class}) ItemDto newItemDto,
+    public ResponseEntity<Object> update(@RequestBody @Validated({Update.class}) ItemResponseDto newItemDto,
                                          @PathVariable int itemId,
                                          @RequestHeader(USER_ID_HEADER) int ownerId) {
         return itemClient.update(itemId, ownerId, newItemDto);
