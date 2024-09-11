@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +8,7 @@ import ru.practicum.shareit.item.client.ItemClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.validations.Create;
+import ru.practicum.shareit.validations.Update;
 
 import java.util.Collections;
 
@@ -41,13 +41,13 @@ public class ItemController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody @Valid ItemDto itemDto,
+    public ResponseEntity<Object> add(@RequestBody @Validated({Create.class}) ItemDto itemDto,
                                       @RequestHeader(USER_ID_HEADER) int ownerId) {
         return itemClient.add(itemDto, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> update(@RequestBody ItemDto newItemDto,
+    public ResponseEntity<Object> update(@RequestBody @Validated({Update.class}) ItemDto newItemDto,
                                          @PathVariable int itemId,
                                          @RequestHeader(USER_ID_HEADER) int ownerId) {
         return itemClient.update(itemId, ownerId, newItemDto);

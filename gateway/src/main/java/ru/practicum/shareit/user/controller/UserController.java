@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.client.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.validations.Create;
+import ru.practicum.shareit.validations.Update;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> update(@RequestBody UserDto newUserDto,
+    public ResponseEntity<Object> update(@RequestBody @Validated(Update.class) UserDto newUserDto,
                                          @PathVariable int userId) {
         return userClient.update(userId, newUserDto);
     }
