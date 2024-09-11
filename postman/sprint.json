@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "069d256e-037e-4bd9-a5de-be6910726adc",
-		"name": "Sprint 15 ShareIt (add-bookings)",
+		"_postman_id": "7fc26681-0775-4307-885f-fd53560f0317",
+		"name": "Sprint 16 ShareIt (add-item-requests-and-gateway)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "23073145",
-		"_collection_link": "https://universal-shadow-295426.postman.co/workspace/My-Workspace~4200f6aa-0504-44b1-8a1d-707d0dcbd5ce/collection/13708500-069d256e-037e-4bd9-a5de-be6910726adc?action=share&source=collection_link&creator=23073145"
+		"_collection_link": "https://universal-shadow-295426.postman.co/workspace/My-Workspace~4200f6aa-0504-44b1-8a1d-707d0dcbd5ce/collection/13708500-7fc26681-0775-4307-885f-fd53560f0317?action=share&source=collection_link&creator=23073145"
 	},
 	"item": [
 		{
@@ -921,10 +921,10 @@
 			]
 		},
 		{
-			"name": "items",
+			"name": "Item",
 			"item": [
 				{
-					"name": "Item create",
+					"name": "Create Item",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1027,7 +1027,7 @@
 					"response": []
 				},
 				{
-					"name": "Item create without X-Sharer-User-Id",
+					"name": "Create Item on request",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1038,13 +1038,18 @@
 									"    const rnd = new RandomUtils();\r",
 									"\r",
 									"    try {\r",
+									"        user1 = await api.addUser(rnd.getUser());\r",
+									"        var request = await api.addRequest(rnd.getRequest(), user1.id);\r",
+									"        pm.collectionVariables.set(\"requestId\", request.id);\r",
+									"        user2 = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set(\"userId\", user2.id);\r",
+									"\r",
 									"        item = rnd.getItem();\r",
 									"        pm.collectionVariables.set(\"item\", item);\r",
 									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
 									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
 									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
+									"\r",
 									"\r",
 									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
@@ -1075,99 +1080,25 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400 or 500\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([500, 400]);\r",
+									"pm.test(\"Status code is 200 or 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
 									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"disabled": true
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}}\n}"
-						},
-						"url": {
-							"raw": "localhost:8080/items",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item create with non-existent user",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id + '1');\r",
-									"\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 404\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([404]);\r",
+									"pm.test(\"Response have body\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
 									"});\r",
-									""
+									"var item = pm.collectionVariables.get(\"item\");\r",
+									"\r",
+									"pm.test(\"Response data equal to request\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('id');\r",
+									"    pm.expect(jsonData).to.have.property('name');\r",
+									"    pm.expect(jsonData).to.have.property('description');\r",
+									"    pm.expect(jsonData).to.have.property('available');\r",
+									"    pm.expect(jsonData.name, `\"name\" must be ${item.name}`).to.eql(item.name);\r",
+									"    pm.expect(jsonData.description, `\"description\" must be ${item.description}`).to.eql(item.description);\r",
+									"    pm.expect(jsonData.available.toString(), `\"available\" must be ${item.available}`).to.eql(item.available.toString());\r",
+									"});"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -1188,7 +1119,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}}\n}"
+							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}},\n    \"requestId\": {{requestId}}\n}"
 						},
 						"url": {
 							"raw": "localhost:8080/items",
@@ -1204,7 +1135,7 @@
 					"response": []
 				},
 				{
-					"name": "Item create without available field",
+					"name": "Create Item without name on request",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1215,13 +1146,18 @@
 									"    const rnd = new RandomUtils();\r",
 									"\r",
 									"    try {\r",
+									"        user1 = await api.addUser(rnd.getUser());\r",
+									"        var request = await api.addRequest(rnd.getRequest(), user1.id);\r",
+									"        pm.collectionVariables.set(\"requestId\", request.id);\r",
+									"        user2 = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set(\"userId\", user2.id);\r",
+									"\r",
 									"        item = rnd.getItem();\r",
 									"        pm.collectionVariables.set(\"item\", item);\r",
 									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
 									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
 									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
+									"\r",
 									"\r",
 									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
@@ -1254,6 +1190,14 @@
 								"exec": [
 									"pm.test(\"Status code is 400\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([400, 500]);\r",
+									"});\r",
+									"pm.test(\"Response have body\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response data have error\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('error');\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1275,7 +1219,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\"\n}"
+							"raw": "{\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}},\n    \"requestId\": {{requestId}}\n}"
 						},
 						"url": {
 							"raw": "localhost:8080/items",
@@ -1291,16 +1235,70 @@
 					"response": []
 				},
 				{
-					"name": "Item create with empty name field",
+					"name": "Create Item without description on request",
 					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        user1 = await api.addUser(rnd.getUser());\r",
+									"        var request = await api.addRequest(rnd.getRequest(), user1.id);\r",
+									"        pm.collectionVariables.set(\"requestId\", request.id);\r",
+									"        user2 = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set(\"userId\", user2.id);\r",
+									"\r",
+									"        item = rnd.getItem();\r",
+									"        pm.collectionVariables.set(\"item\", item);\r",
+									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
+									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
+									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
+									"\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
-									"});",
-									""
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 500]);\r",
+									"});\r",
+									"pm.test(\"Response have body\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response data have error\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('error');\r",
+									"});"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -1311,30 +1309,24 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "X-Sharer-User-Id",
-								"value": "3",
-								"type": "text"
-							},
-							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							},
 							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
+								"key": "X-Sharer-User-Id",
+								"value": "{{userId}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\",\n    \"description\": \"Аккумуляторная отвертка\",\n    \"available\": true\n}"
+							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"available\": {{itemAvailable}},\n    \"requestId\": {{requestId}}\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/items",
+							"raw": "localhost:8080/items",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"items"
 							]
@@ -1343,16 +1335,70 @@
 					"response": []
 				},
 				{
-					"name": "Item create with empty description field",
+					"name": "Create Item without available on request",
 					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        user1 = await api.addUser(rnd.getUser());\r",
+									"        var request = await api.addRequest(rnd.getRequest(), user1.id);\r",
+									"        pm.collectionVariables.set(\"requestId\", request.id);\r",
+									"        user2 = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set(\"userId\", user2.id);\r",
+									"\r",
+									"        item = rnd.getItem();\r",
+									"        pm.collectionVariables.set(\"item\", item);\r",
+									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
+									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
+									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
+									"\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([400, 500]);",
-									"});",
-									""
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 500]);\r",
+									"});\r",
+									"pm.test(\"Response have body\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"pm.test(\"Response data have error\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('error');\r",
+									"});"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -1363,68 +1409,136 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "X-Sharer-User-Id",
-								"value": "3",
-								"type": "text"
-							},
-							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
+								"value": "application/json"
 							},
 							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
+								"key": "X-Sharer-User-Id",
+								"value": "{{userId}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Отвертка\",\n    \"available\": true\n}"
+							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"requestId\": {{requestId}}\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/items",
+							"raw": "localhost:8080/items",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
 								"items"
 							]
 						}
 					},
 					"response": []
-				},
+				}
+			]
+		},
+		{
+			"name": "requests",
+			"item": [
 				{
-					"name": "Item update",
+					"name": "Create request",
 					"event": [
 						{
-							"listen": "test",
+							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Response have body\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"var item = pm.collectionVariables.get(\"item\");",
-									"",
-									"pm.test(\"Response data equal to request\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('name');",
-									"    pm.expect(jsonData).to.have.property('description');",
-									"    pm.expect(jsonData).to.have.property('available');",
-									"    pm.expect(jsonData.name, `\"name\" must be ${item.name}`).to.eql(item.name);",
-									"    pm.expect(jsonData.description, `\"description\" must be ${item.description}`).to.eql(item.description);",
-									"    pm.expect(jsonData.available.toString(), `\"available\" must be ${item.available}`).to.eql(item.available.toString());",
-									"});"
+									"const main = async () => {\r",
+									"    const api = new API(pm);\r",
+									"    const rnd = new RandomUtils();\r",
+									"\r",
+									"    try {\r",
+									"        request1 = rnd.getRequest();\r",
+									"        pm.collectionVariables.set(\"requestDescription\", request1.description);\r",
+									"        user = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set(\"userId\", user.id);\r",
+									"\r",
+									"    } catch(err) {\r",
+									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+									"    }\r",
+									"\r",
+									"};\r",
+									"\r",
+									"const interval = setInterval(() => {}, 1000);\r",
+									"\r",
+									"setTimeout(async () => \r",
+									"    {\r",
+									"        try {\r",
+									"            await main();\r",
+									"        } catch (e) {\r",
+									"            console.error(e);\r",
+									"        } finally {\r",
+									"            clearInterval(interval);\r",
+									"        }\r",
+									"    },  \r",
+									"    100 \r",
+									");"
 								],
 								"type": "text/javascript",
 								"packages": {}
 							}
 						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+									"});\r",
+									"pm.test(\"Response have body\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response data equal to request\", function () {\r",
+									"    var description = pm.collectionVariables.get(\"requestDescription\");\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('id');\r",
+									"    pm.expect(jsonData).to.have.property('description');\r",
+									"    pm.expect(jsonData).to.have.property('created');\r",
+									"    pm.expect(jsonData.description, `\"description\" must be ${description}`).to.eql(description);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Sharer-User-Id",
+								"value": "{{userId}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{    \n    \"description\": \"{{requestDescription}}\"\n}"
+						},
+						"url": {
+							"raw": "localhost:8080/requests",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"requests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get  user requests",
+					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
@@ -1436,14 +1550,8 @@
 									"    try {\r",
 									"        user = await api.addUser(rnd.getUser());\r",
 									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        item = rnd.getItem();\r",
-									"        var it = await api.addItem(item, user.id)\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);        \r",
-									"        pm.collectionVariables.set(\"itemId\", it.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
+									"        request1 = await api.addRequest(rnd.getRequest(), user.id);\r",
+									"        request2 = await api.addRequest(rnd.getRequest(), user.id);\r",
 									"\r",
 									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
@@ -1469,638 +1577,20 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}}\n}"
 						},
-						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"{{itemId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item update without  X-Sharer-User-Id",
-					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 500\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([500, 400]);",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.be.ok;\r",
+									"});\r",
+									"pm.test(\"User requests amount\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.length, 'List length must be 2').to.eql(2);\r",
 									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        item = rnd.getItem();\r",
-									"        var it = await api.addItem(item, user.id)\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);        \r",
-									"        pm.collectionVariables.set(\"itemId\", it.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text",
-								"disabled": true
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}}\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"{{itemId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item update with other user",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 404\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([404, 403]);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id + 1);\r",
-									"        item = rnd.getItem();\r",
-									"        var it = await api.addItem(item, user.id)\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);        \r",
-									"        pm.collectionVariables.set(\"itemId\", it.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\",\n    \"description\": \"{{itemDescription}}\",\n    \"available\": {{itemAvailable}}\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"{{itemId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item update available field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Response have body\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"var item = pm.collectionVariables.get(\"item\");",
-									"",
-									"pm.test(\"Response data equal to request\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('available');",
-									"    pm.expect(jsonData.available.toString(), `\"available\" must be ${item.available}`).to.eql(item.available.toString());",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        item = rnd.getItem();\r",
-									"        var it = await api.addItem(item, user.id)\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);        \r",
-									"        pm.collectionVariables.set(\"itemId\", it.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"available\": {{itemAvailable}}\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"{{itemId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item update description field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Response have body\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"var item = pm.collectionVariables.get(\"item\");",
-									"",
-									"pm.test(\"Response data equal to request\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('name');",
-									"    pm.expect(jsonData).to.have.property('description');",
-									"    pm.expect(jsonData).to.have.property('available');",
-									"    pm.expect(jsonData.description, `\"description\" must be ${item.description}`).to.eql(item.description);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        item = rnd.getItem();\r",
-									"        var it = await api.addItem(item, user.id)\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);        \r",
-									"        pm.collectionVariables.set(\"itemId\", it.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"description\": \"{{itemDescription}}\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"{{itemId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item update name field",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Response have body\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"var item = pm.collectionVariables.get(\"item\");",
-									"",
-									"pm.test(\"Response data equal to request\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('name');",
-									"    pm.expect(jsonData).to.have.property('description');",
-									"    pm.expect(jsonData).to.have.property('available');",
-									"    pm.expect(jsonData.name, `\"name\" must be ${item.name}`).to.eql(item.name);",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        item = rnd.getItem();\r",
-									"        var it = await api.addItem(item, user.id)\r",
-									"        item = rnd.getItem();\r",
-									"        pm.collectionVariables.set(\"item\", item);        \r",
-									"        pm.collectionVariables.set(\"itemId\", it.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"{{itemName}}\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"{{itemId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item get",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Response have body\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"var item = pm.collectionVariables.get(\"item\");",
-									"",
-									"pm.test(\"Response data equal to request\", function () {",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData).to.have.property('id');",
-									"    pm.expect(jsonData).to.have.property('name');",
-									"    pm.expect(jsonData).to.have.property('description');",
-									"    pm.expect(jsonData).to.have.property('available');",
-									"    pm.expect(jsonData.name, `\"name\" must be ${item.name}`).to.eql(item.name);",
-									"    pm.expect(jsonData.description, `\"description\" must be ${item.description}`).to.eql(item.description);",
-									"    pm.expect(jsonData.available.toString(), `\"available\" must be ${item.available}`).to.eql(item.available.toString());",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        item = await api.addItem(rnd.getItem(), user.id)\r",
-									"        pm.collectionVariables.set(\"item\", item);\r",
-									"        pm.collectionVariables.set(\"itemId\", item.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -2111,52 +1601,30 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "X-Sharer-User-Id",
-								"value": "3",
-								"type": "text"
+								"key": "Content-Type",
+								"value": "application/json"
 							},
 							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
+								"key": "X-Sharer-User-Id",
+								"value": "{{userId}}"
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/items/{{itemId}}",
+							"raw": "localhost:8080/requests",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
-								"items",
-								"{{itemId}}"
+								"requests"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get all items from user",
+					"name": "Get  user request by id",
 					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Test list item response\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length, 'List length must be 2').to.eql(2);",
-									"});",
-									"",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
 						{
 							"listen": "prerequest",
 							"script": {
@@ -2166,105 +1634,13 @@
 									"    const rnd = new RandomUtils();\r",
 									"\r",
 									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        await api.addItem(rnd.getItem(), user.id)\r",
-									"        await api.addItem(rnd.getItem(), user.id)\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "{{userId}}",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/items",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item search",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Test list item response\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length, 'List length must be 1').to.eql(1);",
-									"    pm.expect(jsonData[0].name.toUpperCase(), 'Name should include ' + pm.collectionVariables.get(\"searchString\")).to.eql(pm.collectionVariables.get(\"searchString\"))",
-									"});",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        it = rnd.getItem()\r",
-									"        it.available = true\r",
-									"        item = await api.addItem(it, user.id)\r",
-									"        pm.collectionVariables.set(\"item\", item);\r",
-									"        pm.collectionVariables.set(\"itemId\", item.id);\r",
+									"        user1 = await api.addUser(rnd.getUser());\r",
+									"        user2 = await api.addUser(rnd.getUser());\r",
+									"        pm.collectionVariables.set(\"userId\", user2.id);\r",
+									"        req = await api.addRequest(rnd.getRequest(), user1.id);\r",
+									"        pm.collectionVariables.set(\"requestId\", req.id);\r",
+									"        item = await api.addItem(rnd.getItemForRequest(req.id), user2.id);\r",
 									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"searchString\", item.name.toUpperCase());\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
 									"    } catch(err) {\r",
 									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
 									"    }\r",
@@ -2285,164 +1661,32 @@
 									"    },  \r",
 									"    100 \r",
 									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "1",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/items/search?text={{searchString}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"search"
-							],
-							"query": [
-								{
-									"key": "text",
-									"value": "{{searchString}}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item search unavailable",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Test list item response\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length, 'List length must be 0').to.eql(0);",
-									"});",
-									""
 								],
 								"type": "text/javascript",
 								"packages": {}
 							}
 						},
 						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const main = async () => {\r",
-									"    const api = new API(pm);\r",
-									"    const rnd = new RandomUtils();\r",
-									"\r",
-									"    try {\r",
-									"        user = await api.addUser(rnd.getUser());\r",
-									"        pm.collectionVariables.set(\"userId\", user.id);\r",
-									"        it = rnd.getItem()\r",
-									"        it.available = false\r",
-									"        item = await api.addItem(it, user.id)\r",
-									"        pm.collectionVariables.set(\"item\", item);\r",
-									"        pm.collectionVariables.set(\"itemId\", item.id);\r",
-									"        pm.collectionVariables.set(\"itemName\", item.name);\r",
-									"        pm.collectionVariables.set(\"searchString\", item.name.toUpperCase());\r",
-									"        pm.collectionVariables.set(\"itemAvailable\", item.available);\r",
-									"        pm.collectionVariables.set(\"itemDescription\", item.description);\r",
-									"    } catch(err) {\r",
-									"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
-									"    }\r",
-									"\r",
-									"};\r",
-									"\r",
-									"const interval = setInterval(() => {}, 1000);\r",
-									"\r",
-									"setTimeout(async () => \r",
-									"    {\r",
-									"        try {\r",
-									"            await main();\r",
-									"        } catch (e) {\r",
-									"            console.error(e);\r",
-									"        } finally {\r",
-									"            clearInterval(interval);\r",
-									"        }\r",
-									"    },  \r",
-									"    100 \r",
-									");"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Sharer-User-Id",
-								"value": "1",
-								"type": "text"
-							},
-							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/items/search?text={{searchString}}",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"items",
-								"search"
-							],
-							"query": [
-								{
-									"key": "text",
-									"value": "{{searchString}}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Item search empty",
-					"event": [
-						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.be.ok;",
-									"});",
-									"pm.test(\"Test search item response\", function () {",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"    var jsonData = pm.response.json();",
-									"    pm.expect(jsonData.length, 'List length must be 0').to.eql(0);",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.be.ok;\r",
+									"});\r",
+									"pm.test(\"User requests amount\", function () {\r",
+									"    var name = pm.collectionVariables.get(\"itemName\");\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('id');\r",
+									"    pm.expect(jsonData).to.have.property('description');\r",
+									"    pm.expect(jsonData).to.have.property('created');\r",
+									"    pm.expect(jsonData).to.have.property('items');\r",
+									"    pm.expect(jsonData.items[0].name, `\"item name\" must be ${name}`).to.eql(name);\r",
 									"});"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -2450,30 +1694,23 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "X-Sharer-User-Id",
-								"value": "1",
-								"type": "text"
+								"key": "Content-Type",
+								"value": "application/json"
 							},
 							{
-								"key": "Accept",
-								"value": "*/*",
-								"type": "text"
+								"key": "X-Sharer-User-Id",
+								"value": "{{userId}}"
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/items/search?text=",
+							"raw": "localhost:8080/requests/{{requestId}}",
 							"host": [
-								"{{baseUrl}}"
+								"localhost"
 							],
+							"port": "8080",
 							"path": [
-								"items",
-								"search"
-							],
-							"query": [
-								{
-									"key": "text",
-									"value": ""
-								}
+								"requests",
+								"{{requestId}}"
 							]
 						}
 					},
@@ -4740,10 +3977,6 @@
 	],
 	"variable": [
 		{
-			"key": "baseUrl",
-			"value": "http://localhost:8080"
-		},
-		{
 			"key": "userName",
 			"value": ""
 		},
@@ -4753,11 +3986,7 @@
 		},
 		{
 			"key": "userId",
-			"value": ""
-		},
-		{
-			"key": "item",
-			"value": ""
+			"value": "1"
 		},
 		{
 			"key": "itemName",
@@ -4772,12 +4001,20 @@
 			"value": ""
 		},
 		{
-			"key": "itemId",
+			"key": "item",
 			"value": ""
 		},
 		{
-			"key": "searchString",
+			"key": "requestId",
 			"value": ""
+		},
+		{
+			"key": "requestDescription",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": "localhost:8080"
 		},
 		{
 			"key": "start",
@@ -4785,6 +4022,10 @@
 		},
 		{
 			"key": "end",
+			"value": ""
+		},
+		{
+			"key": "itemId",
 			"value": ""
 		},
 		{
@@ -4797,7 +4038,7 @@
 		},
 		{
 			"key": "bookingId",
-			"value": ""
+			"value": "1"
 		},
 		{
 			"key": "booking",
